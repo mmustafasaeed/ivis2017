@@ -11,31 +11,31 @@ resp = {'pnr': sys.argv[2]}
 person_file = csv.DictReader(open(sys.argv[1] + '/person.csv'))
 for row in person_file:
     if row['lopnr_new'] == sys.argv[2]:
-        print row
+        # print row
         resp['person'] = row
 
 resp['biopsy'] = []
 biopsy_file = csv.DictReader(open(sys.argv[1] +  '/biopsy.csv'))
 for row in biopsy_file:
     if row['lopnr_new'] == sys.argv[2]:
-        print row
+        # print row
         resp['biopsy'].append(row)
 
 resp['diagnoses'] = []
 biopsy_file = csv.DictReader(open(sys.argv[1] +  '/diagnoses.csv'))
 for row in biopsy_file:
     if row['lopnr_new'] == sys.argv[2]:
-        print row
+        # print row
         resp['diagnoses'].append(row)
 
 resp['psa'] = []
 biopsy_file = csv.DictReader(open(sys.argv[1] +  '/psa.csv'))
 for row in biopsy_file:
     if row['lopnr_new'] == sys.argv[2]:
-        print row
+        # print row
         resp['psa'].append(row)
 
-
+print 'output will be in %.json' %(sys.argv[2])
 with open(sys.argv[2] + '.json', 'w') as outfile:
     json.dump(resp, outfile)
 
