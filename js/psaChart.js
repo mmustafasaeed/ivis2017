@@ -1,96 +1,183 @@
-// Set the dimensions of the canvas / graph
-var margin = {top: 30, right: 20, bottom: 30, left: 50},
-    width = 600 - margin.left - margin.right,
-    height = 270 - margin.top - margin.bottom;
+drawPsaChart();
 
-// Parse the date / time
-var parseDate = d3.time.format("%d-%b-%y").parse;
+function drawPsaChart() {
 
-// Set the ranges
-var x = d3.time.scale().range([0, width]);
-var y = d3.scale.linear().range([height, 0]);
+    var svgContainerSelection = d3.select("#psaChartMain");
+    var margin = {top: 30, right: 20, bottom: 30, left: 50};
+    var width = svgContainerSelection[0][0].clientWidth;
+    var height = 300;
+    var iconHeight = 20;
+    var iconWidth = 20;
+    var eventMap = [{"type":"psa"},{"type":"biopsy"},{"type":"surgery"}];
+    var dateFormat = d3.time.format("%d %b %Y");
 
-// Define the axes
-var xAxis = d3.svg.axis().scale(x)
-    .orient("bottom").ticks(5);
+    width = width - margin.left - margin.right;
+    height = height - margin.top - margin.bottom;
 
-var yAxis = d3.svg.axis().scale(y)
-    .orient("left").ticks(5);
+    var x = d3.time.scale().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
 
-// Define the line
-var valueline = d3.svg.line()
-    .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.value); });
-    
-// Adds the svg canvas
-var svg = d3.select("#psaChart")
-    .append("svg")
+    var xAxis = d3.svg
+        .axis().scale(x)
+        .orient("bottom")
+        .ticks(5)
+        .tickFormat(dateFormat);
+
+    var yAxis = d3.svg
+        .axis()
+        .scale(y)
+        .orient("left")
+        .ticks(10);
+
+    var valueline = d3.svg
+        .line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d.psa_total); });
+
+    var svg = svgContainerSelection
+        .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-        .attr("transform", 
-              "translate(" + margin.left + "," + margin.top + ")");
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+    var tip = d3.select("#psaChartTooltip")
+        .append('div')
+        .attr('class', 'tip')
+        .html('Many interesting details<br> Like psa fot value <br> Surgery referral dates and so on')
+        .style('border', '1px solid steelblue')
+        .style('padding', '5px')
+        .style('position', 'absolute')
+        .style('display', 'none')
+        .on('mouseover', function(d, i) {
+            tip.transition().duration(0);
+        })
+        .on('mouseout', function(d, i) {
+            tip.style('display', 'none');
+        });
+        
+    svg.append("text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 + 10)
+        .attr("text-anchor", "middle")  
+        .style("font-size", "12px") 
+        .style("text-decoration", "underline")  
+        .text("PSA Chart");
 
-svg.append("text")
-    .attr("x", (width / 2))             
-    .attr("y", 0 + 10)
-    .attr("text-anchor", "middle")  
-    .style("font-size", "12px") 
-    .style("text-decoration", "underline")  
-    .text("PSA Chart");
-
-// Get the data
-d3.csv("dummyData.csv", function(error, data) {
-    data.forEach(function(d) {
-        d.date = parseDate(d.date);
-        d.value = +d.value;
-    });
-
-    // Scale the range of the data
-    x.domain(d3.extent(data, function(d) { return d.date; }));
-    y.domain([0, d3.max(data, function(d) { return d.value; })]);
-
-    // Add the valueline path.
-    svg.append("path")
-        .attr("class", "line")
-        .attr("d", valueline(data))
-
-    // Add the scatterplot
-    svg.selectAll("dot")
-        .data(data)
-      .enter()
-      .append("circle")
-        .attr("data-legend", function(d) { return d.type; })
-        .attr("data-legend-pos", function(d, i) { return i; })
-        .attr("r", 3.5)
-        .attr("cx", function(d) { return x(d.date); })
-        .attr("cy", function(d) { return y(d.value); })
-        .style("fill", function(d) {
-            switch(d.type){
-                case "psa": return "red";
-                case "biopsy": return "blue";
-                case "surgery": return "black";
+    d3.json("jsonData.json", function(error, data) {
+        var psaDots = [];
+        var otherDots = [];
+        
+        data.forEach(function(d) {
+            d.date = new Date(d.date* 1000);
+            if(d.type == "psa") {
+                d.psa_total = +d.psa_total;            
             }
         });
 
-    // Add the X Axis
-    svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].type =="psa") {
+                psaDots.push(data[i]);
+            }
+            else {
+                otherDots.push(data[i]);
+            }
+        }
 
-    // Add the Y Axis
-    svg.append("g")
-        .attr("class", "y axis")
-        .call(yAxis);
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain([0, d3.max(data, function(d) { return d.psa_total; })]);
 
-    var padding = 20,
-    legx = width-100 + padding,
-    legend = svg.append("g")
+        svg.append("path")
+                .attr("class", "line")
+                .attr("d", valueline(psaDots))
+                .attr("id","psaLine");
+
+        svg.selectAll("dot")
+            .data(data)
+            .enter()
+            .append("image")
+            .attr("xlink:href", function(d) {
+                var imagesDir = "../images/";
+                switch(d.type){
+                    case "psa": return imagesDir + "circle.svg";
+                    case "biopsy": return imagesDir + "triangle.svg";
+                    case "surgery": return imagesDir + "rect.svg";
+                } 
+            })
+            .attr("width", iconWidth)
+            .attr("height", iconHeight)
+            .attr("x", function(d) { return x(d.date) - iconWidth/2; })
+            .attr("y", function(d) { if (d.type != "psa") {
+                    return findYatX(x(d.date), document.getElementById("psaLine"))[1];
+               } else {
+                    return y(d.psa_total) - iconHeight/2; }})
+            .style("fill", function(d) {
+                switch(d.type){
+                    case "psa": return "red";
+                    case "biopsy": return "yellow";
+                    case "surgery": return "black";
+                }
+            })
+           .on('mouseover', function(d, i) {
+                tip.transition().duration(0);
+                tip.style('top', y(d.y) - 20);
+                tip.style('left', x(d.x));
+                tip.style('display', 'block');
+            })
+            .on('mouseout', function(d, i) {
+                tip.transition()
+                    .delay(250)
+                    .style('display', 'none');
+            });
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis);
+    });
+
+    var legendPadding = 60;
+
+    var legend = svg.selectAll(".legend")
+        .data(eventMap)
+        .enter()
+        .append("g")
         .attr("class", "legend")
-        .attr("transform", "translate(" + legx + ", 0)")
-        .style("font-size", "12px")
-        .call(d3.legend);
+        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-});
+    legend.append("image")
+        .attr("xlink:href", function(d) {
+            var imagesDir = "../images/";
+            switch(d.type) {
+                case "psa": return imagesDir + "circle.svg";
+                case "biopsy": return imagesDir + "triangle.svg";
+                case "surgery": return imagesDir + "rect.svg";
+            } 
+        })
+        .attr("x", function(d) { return width - iconWidth - legendPadding; })
+        .attr("y", function(d) { return 20;})
+        .attr("width", iconWidth)
+        .attr("height", iconHeight);
+
+    legend.append("text")
+        .attr("x", width - iconWidth/2)
+        .attr("y", 20 + iconHeight/2)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(function(d) { return d.type;});
+
+
+    function findYatX(x, linePath) {
+        function getXY(len) {
+            var point = linePath.getPointAtLength(len);
+            return [point.x, point.y];
+        }
+        var curlen = 0;
+        while (getXY(curlen)[0] < x) { curlen += 0.01; }
+        return getXY(curlen);
+    }
+}
