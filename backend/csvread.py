@@ -2,8 +2,8 @@ import csv
 import json
 import sys
 
-print sys.argv
-print len(sys.argv)
+# print sys.argv
+# print len(sys.argv)
 if (len(sys.argv) != 3):
     print 'use format: python csvread.py <visualering_directory> <lopnr_new>'
 
@@ -35,7 +35,7 @@ for row in biopsy_file:
         # print row
         resp['psa'].append(row)
 
-print 'output will be in %.json' %(sys.argv[2])
+print 'output will be in %s.json' %(sys.argv[2])
 with open(sys.argv[2] + '.json', 'w') as outfile:
     json.dump(resp, outfile)
 
