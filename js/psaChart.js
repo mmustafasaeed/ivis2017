@@ -170,14 +170,15 @@ function drawPsaChart() {
         .style("text-anchor", "end")
         .text(function(d) { return d.type;});
 
-
+    var tempLen = 0;
     function findYatX(x, linePath) {
         function getXY(len) {
             var point = linePath.getPointAtLength(len);
             return [point.x, point.y];
         }
-        var curlen = 0;
+        var curlen = tempLen;
         while (getXY(curlen)[0] < x) { curlen += 0.01; }
+        tempLen = curlen;
         return getXY(curlen);
     }
 }
