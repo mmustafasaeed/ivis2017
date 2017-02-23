@@ -1,11 +1,13 @@
+var margin = {top: 30, right: 20, bottom: 30, left: 50};
+var height = 300;
+
 drawPsaChart();
+
 
 function drawPsaChart() {
 
     var svgContainerSelection = d3.select("#psaChartMain");
-    var margin = {top: 30, right: 20, bottom: 30, left: 50};
     var width = svgContainerSelection[0][0].clientWidth;
-    var height = 300;
     var iconHeight = 20;
     var iconWidth = 20;
     var eventMap = [{"type":"psa"},{"type":"biopsy"},{"type":"surgery"}];
