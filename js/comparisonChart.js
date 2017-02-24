@@ -1,5 +1,10 @@
 var width = d3.select("#comparisonChart")[0][0].clientWidth;
-var marginComparison = {top: (parseInt(d3.select('body').style('width'), 10)/10), right: (parseInt(d3.select('body').style('width'), 10)/20), bottom: (parseInt(d3.select('body').style('width'), 10)/5), left: (parseInt(d3.select('body').style('width'), 10)/20)},
+var marginComparison = {
+    top: (parseInt(d3.select('body').style('width'), 10)/10), 
+    right: (parseInt(d3.select('body').style('width'), 10)/20),
+    bottom: (parseInt(d3.select('body').style('width'), 10)/5),
+    left: (parseInt(d3.select('body').style('width'), 10)/20)
+},
     widthComparison = parseInt(d3.select('body').style('width'), 10) - margin.left - margin.right-300,
     heightComparison = parseInt(d3.select('body').style('height'), 10) - margin.top - margin.bottom-200;
 
@@ -23,7 +28,7 @@ var xAxisComparison = d3.svg.axis()
 var yAxisComparison = d3.svg.axis()
     .scale(yComparison)
     .orient("left")
-    .tickFormat(d3.format(".2s"));
+    // .tickFormat(d3.format(".2s"));
 
 
 // Adds the svg canvas
