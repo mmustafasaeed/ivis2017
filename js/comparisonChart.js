@@ -48,7 +48,8 @@ dataset.forEach(function(d) {
 
 x0Comparison.domain(dataset.map(function(d) { return d.label; }));
 x1Comparison.domain(options).rangeRoundBands([0, x0Comparison.rangeBand()]);
-yComparison.domain([0, d3.max(dataset, function(d) {return d3.max(d.valores, function(d) { return d.value; }); })]);
+// yComparison.domain([0, d3.max(dataset, function(d) {return d3.max(d.valores, function(d) { return d.value; }); })]);
+yComparison.domain([0, 1]);
 
 svgComparison.append("g")
     .attr("class", "x axis")
