@@ -90,7 +90,7 @@ d3.gantt = function() {
     initTimeDomain();
     initAxis();
     
-    var svg = d3.select("body")
+    var svg = d3.select("#medicationChart")
     .append("svg")
     .attr("class", "chart")
     .attr("id", "gantt")
