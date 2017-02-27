@@ -99,7 +99,7 @@ function drawPsaChart() {
             .enter()
             .append("image")
             .attr("xlink:href", function(d) {
-                var imagesDir = "../images/";
+                var imagesDir = "images/";
                 switch(d.type){
                     case "psa": return imagesDir + "circle.svg";
                     case "biopsy": return imagesDir + "triangle.svg";
@@ -153,7 +153,7 @@ function drawPsaChart() {
 
     legend.append("image")
         .attr("xlink:href", function(d) {
-            var imagesDir = "../images/";
+            var imagesDir = "images/";
             switch(d.type) {
                 case "psa": return imagesDir + "circle.svg";
                 case "biopsy": return imagesDir + "triangle.svg";
