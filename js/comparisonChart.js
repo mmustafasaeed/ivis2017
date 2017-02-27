@@ -28,7 +28,8 @@ var yAxisComparison = d3.svg.axis()
 
 // Adds the svg canvas
 var svgComparison = d3.select("#comparisonChart").append("svg")
-    .attr("width", widthComparison + marginComparison.left + marginComparison.right)
+  //  .attr("width", widthComparison + marginComparison.left + marginComparison.right)
+    .attr("width", 1000)
     .attr("height", heightComparison + marginComparison.top + marginComparison.bottom)
     .append("g")
     .attr("transform", "translate(" + marginComparison.left + "," + marginComparison.top + ")");
